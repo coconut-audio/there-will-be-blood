@@ -26,6 +26,7 @@ public:
 
     void SpectrumAnalyzer::updateSpectra(float*, float*, float);
     void setCutoff(float);
+    void setBypass(bool);
 
     int sampleRate;
     int fftSize;
@@ -53,6 +54,7 @@ private:
     float strokeThickness = 2.0f;
 
     float cutoff;
+    float bypass = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpectrumAnalyzer)
 };

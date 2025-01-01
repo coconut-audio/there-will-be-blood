@@ -12,6 +12,7 @@
 #include "PluginProcessor.h"
 #include "LevelMeter.h"
 #include "SpectrumAnalyzer.h"
+#include "LookAndFeel.h"
 
 //==============================================================================
 /**
@@ -58,6 +59,10 @@ private:
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> thresholdSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> cutoffSliderAttachment;
+
+    juce::ToggleButton bypassButton;
+    ToggleButtonLookAndFeel toggleButtonLookAndFeel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassButtonAttachment;
 
     int frameRate = 30;
     float phase = 0.0f;

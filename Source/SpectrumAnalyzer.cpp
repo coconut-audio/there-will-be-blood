@@ -88,36 +88,38 @@ void SpectrumAnalyzer::paint (juce::Graphics& g)
     g.setColour(juce::Colour::fromRGBA(0x55, 0x55, 0x55, 0x88));
     g.fillPath(drySpectrumPath);
 
-    // Get wet spectrum path
-    juce::Path wetSpectrumPath;
+    if (!bypass) {
+        // Get wet spectrum path
+        juce::Path wetSpectrumPath;
 
-    for (int i = 0; i < scopeSize - 1; i++) {
-		float x = juce::jmap<float>(i, 0, scopeSize - 1, backgroundRect.getX(), backgroundRect.getRight());
-		float y = juce::jmap<float>(wetScopeData[i], mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
+        for (int i = 0; i < scopeSize - 1; i++) {
+            float x = juce::jmap<float>(i, 0, scopeSize - 1, backgroundRect.getX(), backgroundRect.getRight());
+            float y = juce::jmap<float>(wetScopeData[i], mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
 
-		if (i == 0) {
-			wetSpectrumPath.startNewSubPath(x, y);
-		}
-		else {
-			wetSpectrumPath.lineTo(x, y);
-		}
-	}
+            if (i == 0) {
+                wetSpectrumPath.startNewSubPath(x, y);
+            }
+            else {
+                wetSpectrumPath.lineTo(x, y);
+            }
+        }
 
-    // Smoothen wet spectrum path
-    wetSpectrumPath = wetSpectrumPath.createPathWithRoundedCorners(cornerSize);
+        // Smoothen wet spectrum path
+        wetSpectrumPath = wetSpectrumPath.createPathWithRoundedCorners(cornerSize);
 
-    // Draw wet spectrum outline
-    g.setColour(juce::Colour::fromRGB(0xFF, 0xFF, 0xFF));
-    g.strokePath(wetSpectrumPath, juce::PathStrokeType(strokeThickness));
+        // Draw wet spectrum outline
+        g.setColour(juce::Colour::fromRGB(0xFF, 0xFF, 0xFF));
+        g.strokePath(wetSpectrumPath, juce::PathStrokeType(strokeThickness));
 
-    // Close wet spectrum path
-    wetSpectrumPath.lineTo(backgroundRect.getRight(), backgroundRect.getBottom());
-    wetSpectrumPath.lineTo(backgroundRect.getX(), backgroundRect.getBottom());
-    wetSpectrumPath.closeSubPath();
+        // Close wet spectrum path
+        wetSpectrumPath.lineTo(backgroundRect.getRight(), backgroundRect.getBottom());
+        wetSpectrumPath.lineTo(backgroundRect.getX(), backgroundRect.getBottom());
+        wetSpectrumPath.closeSubPath();
 
-    // Fill wet spectrum path with gradient
-    g.setGradientFill(spectrumGradient);
-    g.fillPath(wetSpectrumPath);
+        // Fill wet spectrum path with gradient
+        g.setGradientFill(spectrumGradient);
+        g.fillPath(wetSpectrumPath);
+    }
 
     // Draw dB labels
     for (int i = mindB + 24; i < maxdB; i += 24) {
@@ -211,4 +213,8 @@ void SpectrumAnalyzer::setCutoff(float newCutoff) {
 	cutoff = newCutoff;
 
     repaint();
+}
+
+void SpectrumAnalyzer::setBypass(bool newBypass) {
+	bypass = newBypass;
 }

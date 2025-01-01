@@ -19,25 +19,34 @@ TherewillnotbebloodAudioProcessorEditor::TherewillnotbebloodAudioProcessorEditor
     addAndMakeVisible(levelMeter);
     addAndMakeVisible(spectrumAnalyzer);
 
-    thresholdSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "thresholdLevel", thresholdSlider);
+    thresholdSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "threshold", thresholdSlider);
     thresholdSlider.setSliderStyle(juce::Slider::LinearVertical);
     thresholdSlider.setRange(levelMeter.mindB, levelMeter.maxdB, 0.01f);
     thresholdSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     thresholdSlider.addListener(this);
     thresholdSlider.setLookAndFeel(&verticalSliderLookAndFeel);
     addAndMakeVisible(&thresholdSlider);
-    thresholdSlider.setValue(audioProcessor.apvts.getRawParameterValue("thresholdLevel")->load());
+    thresholdSlider.setValue(audioProcessor.apvts.getRawParameterValue("threshold")->load());
     levelMeter.setThreshold(thresholdSlider.getValue());
 
-    cutoffSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "cutoffFrequency", cutoffSlider);
+    cutoffSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "cutoff", cutoffSlider);
     cutoffSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     cutoffSlider.setRange(spectrumAnalyzer.minHz, spectrumAnalyzer.maxHz, 0.1f);
     cutoffSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     cutoffSlider.addListener(this);
     cutoffSlider.setLookAndFeel(&horizontalSliderLookAndFeel);
     addAndMakeVisible(&cutoffSlider);
-    cutoffSlider.setValue(audioProcessor.apvts.getRawParameterValue("cutoffFrequency")->load());
+    cutoffSlider.setValue(audioProcessor.apvts.getRawParameterValue("cutoff")->load());
     spectrumAnalyzer.setCutoff(cutoffSlider.getValue());
+
+    bypassButtonAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "bypass", bypassButton);
+    bypassButton.setLookAndFeel(&toggleButtonLookAndFeel);
+    bypassButton.onClick = [this]() {
+		levelMeter.setBypass(bypassButton.getToggleState());
+        spectrumAnalyzer.setBypass(bypassButton.getToggleState());
+	};
+    addAndMakeVisible(&bypassButton);
+    bypassButton.setToggleState(audioProcessor.apvts.getRawParameterValue("bypass")->load(), juce::NotificationType::dontSendNotification);
 
     spectrumAnalyzer.sampleRate = audioProcessor.getSampleRate();
     spectrumAnalyzer.fftSize = audioProcessor.fftSize;
@@ -75,6 +84,8 @@ void TherewillnotbebloodAudioProcessorEditor::paint (juce::Graphics& g)
     
     shadow.drawForRectangle(g, spectrumAnalyzer.getBounds());
     light.drawForRectangle(g, spectrumAnalyzer.getBounds());
+
+    bypassButton.repaint();
 }
 
 void TherewillnotbebloodAudioProcessorEditor::resized()
@@ -104,6 +115,8 @@ void TherewillnotbebloodAudioProcessorEditor::resized()
     spectrumAnalyzer.setBounds(spectrumAnalyserBounds);
 
     cutoffSlider.setBounds(spectrumAnalyserBounds.getCentreX() - spectrumAnalyserBounds.getWidth() / 3.0f, spectrumAnalyserBounds.getBottom() - 60, 2.0f * spectrumAnalyserBounds.getWidth() / 3.0f, 15);
+
+    bypassButton.setBounds(20, 20, 40, 40);
 }
 
 void TherewillnotbebloodAudioProcessorEditor::timerCallback()
@@ -131,8 +144,9 @@ void TherewillnotbebloodAudioProcessorEditor::timerCallback()
     float y = -(titleRect.getWidth() - titleRect.getCentreX()) * sinf(phase);
     titleGradient = juce::ColourGradient(juce::Colour::fromRGB(0x0D, 0x92, 0xF4), titleRect.getCentreX() + x, titleRect.getCentreY() + y, juce::Colour::fromRGB(0xC3, 0x0E, 0x59), titleRect.getCentreX() - x, titleRect.getCentreY() - y, false);
     
-    phase += 2.0f * juce::float_Pi / (1000.0f * frameRate);
-    phase = fmodf(phase + 2.0f * juce::float_Pi / frameRate, 2.0f * juce::float_Pi);
+    phase += 2.0f * juce::float_Pi / (10.0f * frameRate);
+    phase = fmodf(phase, 2.0f * juce::float_Pi);
+    toggleButtonLookAndFeel.phase = phase;
 
     repaint();
 }

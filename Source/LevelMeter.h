@@ -27,6 +27,7 @@ public:
 
     void addRmsValues(float, float);
     void setThreshold(float);
+    void setBypass(bool);
 
     float mindB = -60.0f;
     float maxdB = 36.0f;
@@ -47,6 +48,7 @@ private:
     float strokeThickness = 2.0f;
 
     float threshold;
+    float bypass = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LevelMeter)
 };
