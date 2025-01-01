@@ -28,14 +28,16 @@ To build There will not be blood from source:
    - Set the scheme to `Release`.
    - Build the project by selecting `Product > Build`.
 
+## Usage
+<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7280241461164457984?compact=1" height="399" width="710" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
+
 ## Contributing
 Contributions to There will not be blood are welcome! If you'd like to contribute, follow these steps:
 1. **Fork the Repository:** Start by forking the [There will not be blood](https://github.com/Coconut-audio/there-will-not-be-blood).
 2. **Make Changes:** Create a new branch, make your changes, and commit them to your branch.
 3. **Create a Pull Request:** Push your changes to your fork and submit a pull request.
 
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-%23FFDD00.svg?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/vivekvijayan12)
-
+<a href="https://www.buymeacoffee.com/vivekvijayan12" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ## License
 This project is licensed under the GNU General Public License. See the [LICENSE](https://github.com/Coconut-audio/there-will-not-be-blood/blob/main/LICENSE) for details.
