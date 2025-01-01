@@ -28,9 +28,6 @@ To build There will not be blood from source:
    - Set the scheme to `Release`.
    - Build the project by selecting `Product > Build`.
 
-## Usage
-<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7280241461164457984?compact=1" height="399" width="710" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
-
 ## Contributing
 Contributions to There will not be blood are welcome! If you'd like to contribute, follow these steps:
 1. **Fork the Repository:** Start by forking the [There will not be blood](https://github.com/Coconut-audio/there-will-not-be-blood).
