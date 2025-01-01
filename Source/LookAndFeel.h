@@ -69,3 +69,39 @@ class HorizontalSliderLookAndFeel : public juce::LookAndFeel_V4 {
 		g.fillEllipse(sliderPos - thumbRadius, y + height / 2 - thumbRadius, 2.0f * thumbRadius, 2.0f * thumbRadius);
 	}
 };
+
+class ToggleButtonLookAndFeel : public juce::LookAndFeel_V4 {
+public:
+	
+	ToggleButtonLookAndFeel() = default;
+
+	void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override {
+		juce::DropShadow shadow(juce::Colour::fromRGBA(0x00, 0x00, 0x00, 0x66), 15, juce::Point<int>(5, 5));
+		juce::DropShadow light(juce::Colour::fromRGBA(0x40, 0x60, 0x80, 0x20), 15, juce::Point<int>(-5, -5));
+
+		juce::Rectangle<float> buttonRect = button.getLocalBounds().toFloat();
+		buttonRect = buttonRect.reduced(10.0f);
+
+		if (button.getToggleState()) {
+			float x = (buttonRect.getWidth() - buttonRect.getCentreX() / 0.5f) * cosf(phase);
+			float y = -(buttonRect.getHeight() - buttonRect.getCentreY() / 0.5f) * sinf(phase);
+			buttonGradient = juce::ColourGradient(juce::Colour::fromRGB(0x0D, 0x92, 0xF4), buttonRect.getCentreX() + x, buttonRect.getCentreY() + y, juce::Colour::fromRGB(0xC3, 0x0E, 0x59), buttonRect.getCentreX() - x, buttonRect.getCentreY() - y, false);
+		}
+		else {
+			buttonGradient = juce::ColourGradient(juce::Colour::fromRGBA(0x55, 0x55, 0x55, 0x88), buttonRect.getX(), buttonRect.getY(), juce::Colour::fromRGBA(0x55, 0x55, 0x55, 0x88), buttonRect.getX(), buttonRect.getBottom(), false);
+		}
+
+		// Draw shadow and light
+		shadow.drawForRectangle(g, buttonRect.toNearestInt());
+		light.drawForRectangle(g, buttonRect.toNearestInt());
+
+		// Draw background
+		g.setGradientFill(buttonGradient);
+		g.fillRoundedRectangle(buttonRect.toFloat(), 5.0f);
+	}
+
+	float phase = 0.0f;
+
+private:
+	juce::ColourGradient buttonGradient;
+};

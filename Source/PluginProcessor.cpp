@@ -97,14 +97,14 @@ void TherewillnotbebloodAudioProcessor::prepareToPlay (double sampleRate, int sa
     spec.numChannels = getTotalNumOutputChannels();
 
     compressor.prepare(spec);
-    compressor.setThreshold(*apvts.getRawParameterValue("thresholdLevel"));
+    compressor.setThreshold(*apvts.getRawParameterValue("threshold"));
     compressor.setRatio(8.0f);
     compressor.setAttack(20.0f);
     compressor.setRelease(20.0f);
 
     for (int filter = 0; filter < 2; ++filter) {
 		for (int channel = 0; channel < 2; ++channel) {
-			iirFilter[filter][channel].setCoefficients(juce::IIRCoefficients::makeHighPass(getSampleRate(), *apvts.getRawParameterValue("cutoffFrequency")));
+			iirFilter[filter][channel].setCoefficients(juce::IIRCoefficients::makeHighPass(getSampleRate(), *apvts.getRawParameterValue("cutoff")));
 		}
 	}
 }
@@ -189,7 +189,12 @@ void TherewillnotbebloodAudioProcessor::processBlock (juce::AudioBuffer<float>& 
     wetSignalBuffer.addFrom(0, 0, drySignalBuffer, 0, 0, buffer.getNumSamples());
     wetSignalBuffer.addFrom(1, 0, drySignalBuffer, 1, 0, buffer.getNumSamples());
 
-    buffer.makeCopyOf(wetSignalBuffer);
+    if (*apvts.getRawParameterValue("bypass")) {
+        buffer.makeCopyOf(drySignalBuffer);
+    }
+    else {
+		buffer.makeCopyOf(wetSignalBuffer);
+	}
 }
 
 //==============================================================================
@@ -227,8 +232,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout TherewillnotbebloodAudioProc
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>("thresholdLevel", "Threshold Level", juce::NormalisableRange<float>(- 60.0f, 36.0f), -0.0f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("cutoffFrequency", "Cutoff Frequency", juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 0.25f), 4000.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("threshold", "Threshold", juce::NormalisableRange<float>(- 60.0f, 36.0f), -0.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("cutoff", "Cutoff", juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 0.25f), 4000.0f));
+    layout.add(std::make_unique<juce::AudioParameterBool>("bypass", "Bypass", false));
 
     return layout;
 }

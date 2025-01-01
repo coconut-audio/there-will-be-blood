@@ -78,33 +78,35 @@ void LevelMeter::paint (juce::Graphics& g)
     g.setColour(juce::Colour::fromRGBA(0x55, 0x55, 0x55, 0x88));
     g.fillPath(dryRmsPath);
 
-    // Get wet rms path
-    juce::Path wetRmsPath;
+    if (!bypass) {
+        // Get wet rms path
+        juce::Path wetRmsPath;
 
-    for (int i = 0; i < wetRmsValues.size() - 1; i++) {
-        float x = juce::jmap<float>(i, 0, wetRmsValues.size() - 1, backgroundRect.getX(), backgroundRect.getRight());
-        float y = juce::jmap<float>(wetRmsValues[i], mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
+        for (int i = 0; i < wetRmsValues.size() - 1; i++) {
+            float x = juce::jmap<float>(i, 0, wetRmsValues.size() - 1, backgroundRect.getX(), backgroundRect.getRight());
+            float y = juce::jmap<float>(wetRmsValues[i], mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
 
-        if (i == 0) {
-            wetRmsPath.startNewSubPath(x, y);
+            if (i == 0) {
+                wetRmsPath.startNewSubPath(x, y);
+            }
+            else {
+                wetRmsPath.lineTo(x, y);
+            }
         }
-        else {
-            wetRmsPath.lineTo(x, y);
-        }
+
+        // Draw wet rms outline
+        g.setColour(juce::Colour::fromRGB(0xFF, 0xFF, 0xFF));
+        g.strokePath(wetRmsPath, juce::PathStrokeType(strokeThickness / 2.0f));
+
+        // Close wet rms path
+        wetRmsPath.lineTo(backgroundRect.getRight(), backgroundRect.getBottom());
+        wetRmsPath.lineTo(backgroundRect.getX(), backgroundRect.getBottom());
+        wetRmsPath.closeSubPath();
+
+        // Fill wet rms path with gradient
+        g.setGradientFill(waveformGradient);
+        g.fillPath(wetRmsPath);
     }
-
-    // Draw wet rms outline
-    g.setColour(juce::Colour::fromRGB(0xFF, 0xFF, 0xFF));
-    g.strokePath(wetRmsPath, juce::PathStrokeType(strokeThickness / 2.0f));
-
-    // Close wet rms path
-    wetRmsPath.lineTo(backgroundRect.getRight(), backgroundRect.getBottom());
-    wetRmsPath.lineTo(backgroundRect.getX(), backgroundRect.getBottom());
-    wetRmsPath.closeSubPath();
-
-    // Fill wet rms path with gradient
-    g.setGradientFill(waveformGradient);
-    g.fillPath(wetRmsPath);
 
     // Draw dB labels
     for (int i = mindB + 12; i < maxdB; i += 12) {
@@ -163,4 +165,8 @@ void LevelMeter::addRmsValues(float newDryRmsValue, float newWetRmsValue) {
 void LevelMeter::setThreshold(float newThreshold) {
 	threshold = newThreshold;
 	repaint();
+}
+
+void LevelMeter::setBypass(bool newBypass) {
+	bypass = newBypass;
 }
