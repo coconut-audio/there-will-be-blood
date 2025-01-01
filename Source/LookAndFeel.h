@@ -82,7 +82,7 @@ public:
 		juce::Rectangle<float> buttonRect = button.getLocalBounds().toFloat();
 		buttonRect = buttonRect.reduced(10.0f);
 
-		if (button.getToggleState()) {
+		if (!button.getToggleState()) {
 			float x = (buttonRect.getWidth() - buttonRect.getCentreX() / 0.5f) * cosf(phase);
 			float y = -(buttonRect.getHeight() - buttonRect.getCentreY() / 0.5f) * sinf(phase);
 			buttonGradient = juce::ColourGradient(juce::Colour::fromRGB(0x0D, 0x92, 0xF4), buttonRect.getCentreX() + x, buttonRect.getCentreY() + y, juce::Colour::fromRGB(0xC3, 0x0E, 0x59), buttonRect.getCentreX() - x, buttonRect.getCentreY() - y, false);

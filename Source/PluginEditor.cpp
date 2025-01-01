@@ -116,7 +116,7 @@ void TherewillnotbebloodAudioProcessorEditor::resized()
 
     cutoffSlider.setBounds(spectrumAnalyserBounds.getCentreX() - spectrumAnalyserBounds.getWidth() / 3.0f, spectrumAnalyserBounds.getBottom() - 60, 2.0f * spectrumAnalyserBounds.getWidth() / 3.0f, 15);
 
-    bypassButton.setBounds(20, 20, 40, 40);
+    bypassButton.setBounds(20, 15, 40, 40);
 }
 
 void TherewillnotbebloodAudioProcessorEditor::timerCallback()
