@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="GmX9sC" name="There will not be blood" projectType="audioplug"
-              useAppConfig="0" addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              useAppConfig="0" addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1"
+              companyWebsite="Coconut Audio">
   <MAINGROUP id="alqOIu" name="There will not be blood">
     <GROUP id="{CF0D63D8-66A1-C3AB-0F07-2E5678B40B88}" name="Source">
       <GROUP id="{276B5757-C022-6749-D3BE-FAFF1DA1C6ED}" name="Assets">
