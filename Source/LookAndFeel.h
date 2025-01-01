@@ -88,12 +88,12 @@ public:
 			buttonGradient = juce::ColourGradient(juce::Colour::fromRGB(0x0D, 0x92, 0xF4), buttonRect.getCentreX() + x, buttonRect.getCentreY() + y, juce::Colour::fromRGB(0xC3, 0x0E, 0x59), buttonRect.getCentreX() - x, buttonRect.getCentreY() - y, false);
 		}
 		else {
+			// Draw shadow and light
+			shadow.drawForRectangle(g, buttonRect.toNearestInt());
+			light.drawForRectangle(g, buttonRect.toNearestInt());
+
 			buttonGradient = juce::ColourGradient(juce::Colour::fromRGBA(0x55, 0x55, 0x55, 0x88), buttonRect.getX(), buttonRect.getY(), juce::Colour::fromRGBA(0x55, 0x55, 0x55, 0x88), buttonRect.getX(), buttonRect.getBottom(), false);
 		}
-
-		// Draw shadow and light
-		shadow.drawForRectangle(g, buttonRect.toNearestInt());
-		light.drawForRectangle(g, buttonRect.toNearestInt());
 
 		// Draw background
 		g.setGradientFill(buttonGradient);
