@@ -55,38 +55,31 @@ public:
 
 	void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override {
 		juce::Rectangle<float> buttonRect = button.getLocalBounds().toFloat();
-		buttonRect = buttonRect.reduced(10.0f);
+		buttonRect = buttonRect.reduced(12.0f);
 		juce::Path buttonPath;
 		buttonPath.addEllipse(buttonRect);
 
 		if (!button.getToggleState()) {
 			// Draw shadow and light
-			juce::DropShadow shadow(juce::Colour::fromRGBA(0x00, 0x00, 0x00, 0x44), 10, juce::Point<int>(3, 3));
-			juce::DropShadow light(juce::Colour::fromRGBA(0x40, 0x60, 0x80, 0x20), 10, juce::Point<int>(-3, -3));
+			juce::DropShadow shadow(juce::Colour::fromRGBA(0x00, 0x00, 0x00, 0x66), 10, juce::Point<int>(2, 2));
+			juce::DropShadow light(juce::Colour::fromRGBA(0x40, 0x60, 0x80, 0x20), 10, juce::Point<int>(-2, -2));
 			shadow.drawForPath(g, buttonPath);
 			light.drawForPath(g, buttonPath);
 
 			// Draw button
-			float x = (buttonRect.getWidth() - buttonRect.getCentreX() / 0.5f) * cosf(phase);
-			float y = -(buttonRect.getHeight() - buttonRect.getCentreY() / 0.5f) * sinf(phase);
-			buttonGradient = juce::ColourGradient(juce::Colour::fromRGB(0x0D, 0x92, 0xF4), buttonRect.getCentreX() + x, buttonRect.getCentreY() + y, juce::Colour::fromRGB(0xC3, 0x0E, 0x59), buttonRect.getCentreX() - x, buttonRect.getCentreY() - y, false);
-			g.setGradientFill(buttonGradient);
+			g.setColour(juce::Colour::fromRGB(0xFF, 0xFF, 0xFF));
 			g.fillPath(buttonPath);
 		}
 		else {
 			// Draw shadow and light
-			juce::DropShadow shadow(juce::Colour::fromRGBA(0x00, 0x00, 0x00, 0x44), 15, juce::Point<int>(5, 5));
+			juce::DropShadow shadow(juce::Colour::fromRGBA(0x00, 0x00, 0x00, 0x66), 15, juce::Point<int>(5, 5));
 			juce::DropShadow light(juce::Colour::fromRGBA(0x40, 0x60, 0x80, 0x20), 15, juce::Point<int>(-5, -5));
 			shadow.drawForPath(g, buttonPath);
 			light.drawForPath(g, buttonPath);
 
+			// Draw button
 			g.setColour(juce::Colour::fromRGBA(0x42, 0x4E, 0x59, 0x88));
 			g.fillPath(buttonPath);
 		}
 	}
-
-	float phase = 0.0f;
-
-private:
-	juce::ColourGradient buttonGradient;
 };

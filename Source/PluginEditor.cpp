@@ -75,13 +75,9 @@ void TherewillnotbebloodAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawImage(coconutPluginsImage, imageRect.toFloat());
 
     // Draw title
-    shadow.drawForRectangle(g, titleRect);
-    light.drawForRectangle(g, titleRect);
-    g.setColour(juce::Colour::fromRGB(0x18, 0x20, 0x2A));
-    g.fillRoundedRectangle(titleRect.toFloat(), 10);
     g.setColour(juce::Colours::white);
-    g.setGradientFill(titleGradient);
-    g.setFont(16.0f);
+    g.setFont(typeface);
+    g.setFont(28.0f);
     g.drawText("There will not be blood", getLocalBounds().getCentreX() - 100, 25, 200, 20, juce::Justification::centred);
 
     // Draw shadow and light for the components
@@ -100,12 +96,6 @@ void TherewillnotbebloodAudioProcessorEditor::resized()
     imageRect.setY(10);
     imageRect.setWidth(50);
     imageRect.setHeight(50);
-
-    // Title
-    titleRect.setBounds(getLocalBounds().getCentreX() - 110, 20, 220, 30);
-    float x = (titleRect.getWidth() - titleRect.getCentreX()) * cosf(phase);
-    float y = (titleRect.getHeight() - titleRect.getCentreY()) * sinf(phase);
-    titleGradient = juce::ColourGradient(juce::Colour::fromRGB(0x0D, 0x92, 0xF4), titleRect.getCentreX() + x, titleRect.getCentreY() + y, juce::Colour::fromRGB(0xC3, 0x0E, 0x59), titleRect.getCentreX() - x, titleRect.getCentreY() - y, false);
 
     // Level meter
     juce::Rectangle<int> levelMeterBounds(getLocalBounds());
@@ -146,15 +136,6 @@ void TherewillnotbebloodAudioProcessorEditor::timerCallback()
     spectrumAnalyzer.updateSpectra(audioProcessor.dryFftData, audioProcessor.wetFftData, audioProcessor.fftSize);
     audioProcessor.nextDryFFTBlockReady = false;
     audioProcessor.nextWetFFTBlockReady = false;
-
-    // Gradient animation
-    float x = (titleRect.getWidth() - titleRect.getCentreX()) * cosf(phase);
-    float y = -(titleRect.getWidth() - titleRect.getCentreX()) * sinf(phase);
-    titleGradient = juce::ColourGradient(juce::Colour::fromRGB(0x0D, 0x92, 0xF4), titleRect.getCentreX() + x, titleRect.getCentreY() + y, juce::Colour::fromRGB(0xC3, 0x0E, 0x59), titleRect.getCentreX() - x, titleRect.getCentreY() - y, false);
-    
-    phase += 2.0f * juce::float_Pi / (10.0f * frequency);
-    phase = fmodf(phase, 2.0f * juce::float_Pi);
-    lookAndFeel.phase = phase;
 
     repaint();
 }

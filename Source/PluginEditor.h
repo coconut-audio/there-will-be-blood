@@ -44,9 +44,7 @@ private:
     juce::Rectangle<int> imageRect;
 
     // Title
-    juce::Typeface::Ptr typeface = juce::Typeface::createSystemTypefaceFor(BinaryData::AdventPro_ExpandedExtraBold_ttf, BinaryData::AdventPro_ExpandedExtraBold_ttfSize);
-    juce::Rectangle<int> titleRect;
-    juce::ColourGradient titleGradient;
+    juce::Typeface::Ptr typeface = juce::Typeface::createSystemTypefaceFor(BinaryData::kraut____typefuck11_ttf, BinaryData::kraut____typefuck11_ttfSize);
 
     // Components
     LevelMeter levelMeter;
@@ -69,7 +67,6 @@ private:
 
     // Variables
     int frequency = 30;
-    float phase = 0.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TherewillnotbebloodAudioProcessorEditor)
 };

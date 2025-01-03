@@ -2,12 +2,14 @@
 
 <JUCERPROJECT id="GmX9sC" name="There will not be blood" projectType="audioplug"
               useAppConfig="0" addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1"
-              pluginManufacturer="Coconut Audio" pluginManufacturerCode="coau"
-              aaxIdentifier="com.coconutaudio.Therewillnotbeblood" bundleIdentifier="com.coconutaudio.Therewillnotbeblood"
+              pluginManufacturer="Coconut Audio" pluginManufacturerCode="Coau"
+              aaxIdentifier="com.CoconutAudio.Therewillnotbeblood" bundleIdentifier="com.CoconutAudio.Therewillnotbeblood"
               companyName="Coconut Audio">
   <MAINGROUP id="alqOIu" name="There will not be blood">
     <GROUP id="{CF0D63D8-66A1-C3AB-0F07-2E5678B40B88}" name="Source">
       <GROUP id="{276B5757-C022-6749-D3BE-FAFF1DA1C6ED}" name="Assets">
+        <FILE id="KXyRP9" name="kraut____typefuck11.ttf" compile="0" resource="1"
+              file="Source/Assets/kraut____typefuck11.ttf"/>
         <FILE id="TsNeiG" name="coconut_audio.png" compile="0" resource="1"
               file="Source/Assets/coconut_audio.png"/>
         <FILE id="ozFwOF" name="AdventPro_Expanded-ExtraBold.ttf" compile="0"
