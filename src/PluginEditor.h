@@ -1,30 +1,19 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "LevelMeter.h"
 #include "SpectrumAnalyzer.h"
-#include "LookAndFeel.h"
+#include "CustomLookAndFeel.h"
 
 #define INTERPOLATIONSIZE 16000
 
 //==============================================================================
-/**
-*/
-class TherewillnotbebloodAudioProcessorEditor  : public juce::AudioProcessorEditor,
-    public juce::Timer, public juce::Slider::Listener
+class AudioPluginAudioProcessorEditor final : public juce::AudioProcessorEditor, public juce::Timer, public juce::Slider::Listener
 {
 public:
-    TherewillnotbebloodAudioProcessorEditor (TherewillnotbebloodAudioProcessor&);
-    ~TherewillnotbebloodAudioProcessorEditor() override;
+    explicit AudioPluginAudioProcessorEditor (AudioPluginAudioProcessor&);
+    ~AudioPluginAudioProcessorEditor() override;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -35,7 +24,7 @@ public:
     void sliderValueChanged(juce::Slider*) override;
 
 private:
-    TherewillnotbebloodAudioProcessor& audioProcessor;
+    AudioPluginAudioProcessor& processorRef;
 
     // texture image
     juce::Image textureImage = juce::ImageCache::getFromMemory(BinaryData::rust_texture_png, BinaryData::rust_texture_pngSize);
@@ -62,7 +51,7 @@ private:
     juce::LagrangeInterpolator wetLagrangeInterpolator;
     float dryInterpolatedFftData[INTERPOLATIONSIZE];
     float wetInterpolatedFftData[INTERPOLATIONSIZE];
-    float ratio = audioProcessor.fftSize / (float)INTERPOLATIONSIZE;
+    float ratio = processorRef.fftSize / (float)INTERPOLATIONSIZE;
 
     // Sliders and buttons
     juce::Slider thresholdSlider;
@@ -73,7 +62,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassButtonAttachment;
 
     // LookAndFeel
-    LookAndFeel lookAndFeel;
+    CustomLookAndFeel lookAndFeel;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TherewillnotbebloodAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };

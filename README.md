@@ -2,10 +2,6 @@
 
 <p align="center"><img src="Screenshot.png" width="600"></p>
 
-<p>
-    There will not be blood is a dynamics processing plugin.
-</p>
-
 ### Build from Source
 To build There will not be blood from source:
 
@@ -13,20 +9,12 @@ To build There will not be blood from source:
    ```bash
    git clone https://github.com/Coconut-audio/there-will-not-be-blood.git
    cd there-will-not-be-blood
-2. **Install Dependencies:**
-   - **Windows:** Make sure you have Visual Studio installed with the necessary components for C++ development.
-   - **Mac:** Make sure you have Xcode installed with the command line tools.
+   ```
 3. **Build the Plugin:**
-
-   **Windows:**
-   - Open the project in Visual Studio.
-   - Set the build configuration to `Release`.
-   - Build the project by selecting `Build > Build Solution`.
-
-   **Mac:**
-   - Open the project in Xcode.
-   - Set the scheme to `Release`.
-   - Build the project by selecting `Product > Build`.
+   ```bash
+   cmake -B Builds -DCMAKE_BUILD_TYPE=Release
+   cmake --build Builds --config Release
+   ```
 
 ## Contributing
 Contributions to There will not be blood are welcome! If you'd like to contribute, follow these steps:

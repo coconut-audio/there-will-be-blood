@@ -1,38 +1,32 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
 //==============================================================================
-TherewillnotbebloodAudioProcessor::TherewillnotbebloodAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
+AudioPluginAudioProcessor::AudioPluginAudioProcessor()
      : AudioProcessor (BusesProperties()
+                     #if ! JucePlugin_IsMidiEffect
+                      #if ! JucePlugin_IsSynth
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+                     #endif
                        ),
     apvts(*this, nullptr, "PARAMETERS", createParameters())
 {
     apvts.state = juce::ValueTree("PARAMETERS");
 }
 
-TherewillnotbebloodAudioProcessor::~TherewillnotbebloodAudioProcessor()
+AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
 {
 }
 
 //==============================================================================
-const juce::String TherewillnotbebloodAudioProcessor::getName() const
+const juce::String AudioPluginAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool TherewillnotbebloodAudioProcessor::acceptsMidi() const
+bool AudioPluginAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -41,7 +35,7 @@ bool TherewillnotbebloodAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool TherewillnotbebloodAudioProcessor::producesMidi() const
+bool AudioPluginAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -50,7 +44,7 @@ bool TherewillnotbebloodAudioProcessor::producesMidi() const
    #endif
 }
 
-bool TherewillnotbebloodAudioProcessor::isMidiEffect() const
+bool AudioPluginAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -59,37 +53,40 @@ bool TherewillnotbebloodAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double TherewillnotbebloodAudioProcessor::getTailLengthSeconds() const
+double AudioPluginAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int TherewillnotbebloodAudioProcessor::getNumPrograms()
+int AudioPluginAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int TherewillnotbebloodAudioProcessor::getCurrentProgram()
+int AudioPluginAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void TherewillnotbebloodAudioProcessor::setCurrentProgram (int index)
+void AudioPluginAudioProcessor::setCurrentProgram (int index)
 {
+    juce::ignoreUnused (index);
 }
 
-const juce::String TherewillnotbebloodAudioProcessor::getProgramName (int index)
+const juce::String AudioPluginAudioProcessor::getProgramName (int index)
 {
+    juce::ignoreUnused (index);
     return {};
 }
 
-void TherewillnotbebloodAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void AudioPluginAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
+    juce::ignoreUnused (index, newName);
 }
 
 //==============================================================================
-void TherewillnotbebloodAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     juce::dsp::ProcessSpec spec;
     spec.sampleRate = sampleRate;
@@ -109,14 +106,13 @@ void TherewillnotbebloodAudioProcessor::prepareToPlay (double sampleRate, int sa
 	}
 }
 
-void TherewillnotbebloodAudioProcessor::releaseResources()
+void AudioPluginAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
-#ifndef JucePlugin_PreferredChannelConfigurations
-bool TherewillnotbebloodAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool AudioPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -139,9 +135,9 @@ bool TherewillnotbebloodAudioProcessor::isBusesLayoutSupported (const BusesLayou
     return true;
   #endif
 }
-#endif
 
-void TherewillnotbebloodAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
+                                              juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -197,26 +193,25 @@ void TherewillnotbebloodAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 }
 
 //==============================================================================
-bool TherewillnotbebloodAudioProcessor::hasEditor() const
+bool AudioPluginAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* TherewillnotbebloodAudioProcessor::createEditor()
+juce::AudioProcessorEditor* AudioPluginAudioProcessor::createEditor()
 {
-    return new TherewillnotbebloodAudioProcessorEditor (*this);
+    return new AudioPluginAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void TherewillnotbebloodAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
+void AudioPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     std::unique_ptr <juce::XmlElement> params(apvts.state.createXml());
 
     copyXmlToBinary(*params, destData);
-
 }
 
-void TherewillnotbebloodAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
+void AudioPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     std::unique_ptr <juce::XmlElement> params(getXmlFromBinary(data, sizeInBytes));
 
@@ -227,7 +222,7 @@ void TherewillnotbebloodAudioProcessor::setStateInformation(const void* data, in
     }
 }
 
-juce::AudioProcessorValueTreeState::ParameterLayout TherewillnotbebloodAudioProcessor::createParameters()
+juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::createParameters()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
@@ -238,7 +233,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout TherewillnotbebloodAudioProc
     return layout;
 }
 
-float TherewillnotbebloodAudioProcessor::getRmsValue(bool drySignal)
+float AudioPluginAudioProcessor::getRmsValue(bool drySignal)
 {
     if (drySignal) {
 		return dryRmsValue;
@@ -248,7 +243,7 @@ float TherewillnotbebloodAudioProcessor::getRmsValue(bool drySignal)
 	}
 }
 
-void TherewillnotbebloodAudioProcessor::pushNextDrySampleIntoFifo(float sample)
+void AudioPluginAudioProcessor::pushNextDrySampleIntoFifo(float sample)
 {
     if (dryFifoIndex == fftSize) {
         if (!nextDryFFTBlockReady) {
@@ -263,7 +258,7 @@ void TherewillnotbebloodAudioProcessor::pushNextDrySampleIntoFifo(float sample)
     dryFifo[dryFifoIndex++] = sample;
 }
 
-void TherewillnotbebloodAudioProcessor::pushNextWetSampleIntoFifo(float sample)
+void AudioPluginAudioProcessor::pushNextWetSampleIntoFifo(float sample)
 {
     if (wetFifoIndex == fftSize) {
         if (!nextWetFFTBlockReady) {
@@ -278,12 +273,12 @@ void TherewillnotbebloodAudioProcessor::pushNextWetSampleIntoFifo(float sample)
     wetFifo[wetFifoIndex++] = sample;
 }
 
-void TherewillnotbebloodAudioProcessor::setThreshold(float threshold)
+void AudioPluginAudioProcessor::setThreshold(float threshold)
 {
 	compressor.setThreshold(threshold);
 }
 
-void TherewillnotbebloodAudioProcessor::setCutoff(float cutoff)
+void AudioPluginAudioProcessor::setCutoff(float cutoff)
 {
     for (int i = 0; i < NUMFILTERS; ++i) {
         filter[i].setCutoffFrequency(cutoff);
@@ -294,5 +289,5 @@ void TherewillnotbebloodAudioProcessor::setCutoff(float cutoff)
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-	return new TherewillnotbebloodAudioProcessor();
+    return new AudioPluginAudioProcessor();
 }

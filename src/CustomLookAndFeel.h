@@ -12,10 +12,10 @@
 
 #include <JuceHeader.h>
 
-class LookAndFeel : public juce::LookAndFeel_V4 
+class CustomLookAndFeel : public juce::LookAndFeel_V4 
 {
 public:
-    LookAndFeel() = default;
+    CustomLookAndFeel() = default;
 
     void drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle style, juce::Slider& slider) override {
 		float thumbRadius = 5.0f;

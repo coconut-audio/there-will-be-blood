@@ -1,36 +1,26 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
+#include <juce_audio_processors/juce_audio_processors.h>
 
 #define NUMFILTERS 4
 
 //==============================================================================
-/**
-*/
-class TherewillnotbebloodAudioProcessor  : public juce::AudioProcessor
+class AudioPluginAudioProcessor final : public juce::AudioProcessor
 {
 public:
     //==============================================================================
-    TherewillnotbebloodAudioProcessor();
-    ~TherewillnotbebloodAudioProcessor() override;
+    AudioPluginAudioProcessor();
+    ~AudioPluginAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    using AudioProcessor::processBlock;
 
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
@@ -68,7 +58,7 @@ public:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
     juce::AudioProcessorValueTreeState apvts;
 
-    //==============================================================================
+//==============================================================================
     enum
     {
         fftOrder = 10,
@@ -94,6 +84,6 @@ private:
     juce::dsp::Compressor<float> compressor;
 
     juce::dsp::StateVariableTPTFilter<float> filter[NUMFILTERS];
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TherewillnotbebloodAudioProcessor)
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
 };
