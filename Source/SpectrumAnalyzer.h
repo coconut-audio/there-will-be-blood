@@ -12,6 +12,8 @@
 
 #include <JuceHeader.h>
 
+#define SCOPESIZE 512
+
 //==============================================================================
 /*
 */
@@ -31,7 +33,7 @@ public:
     int sampleRate;
     int fftSize;
 
-    float mindB = -96.0f;
+    float mindB = -60.0f;
     float maxdB = 36.0f;
 
     float minHz = 20.0f;
@@ -44,9 +46,8 @@ private:
     juce::DropShadow shadow;
     juce::DropShadow light;
 
-    static const int scopeSize = 512;
-    float dryScopeData[scopeSize];
-    float wetScopeData[scopeSize];
+    float dryScopeData[SCOPESIZE];
+    float wetScopeData[SCOPESIZE];
 
     std::vector<int> frequencies = { 80, 250, 500, 1000, 2000, 4000, 10000 };
 

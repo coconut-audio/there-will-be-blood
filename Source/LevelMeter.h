@@ -35,7 +35,7 @@ public:
 private:
     juce::Rectangle<float> backgroundRect;
 
-    juce::ColourGradient waveformGradient;
+    juce::ColourGradient levelGradient;
     juce::ColourGradient radialGradient;
     juce::DropShadow shadow;
     juce::DropShadow light;

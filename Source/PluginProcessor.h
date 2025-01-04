@@ -10,6 +10,8 @@
 
 #include <JuceHeader.h>
 
+#define NUMFILTERS 4
+
 //==============================================================================
 /**
 */
@@ -70,8 +72,7 @@ public:
     enum
     {
         fftOrder = 10,
-        fftSize = 1 << fftOrder,
-        scopeSize = 512
+        fftSize = 1 << fftOrder
     };
 
     #include <vector>
@@ -92,7 +93,7 @@ private:
 
     juce::dsp::Compressor<float> compressor;
 
-    juce::IIRFilter iirFilter[2][2];
+    juce::dsp::StateVariableTPTFilter<float> filter[NUMFILTERS];
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TherewillnotbebloodAudioProcessor)
 };

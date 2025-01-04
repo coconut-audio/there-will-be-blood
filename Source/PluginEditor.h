@@ -14,6 +14,8 @@
 #include "SpectrumAnalyzer.h"
 #include "LookAndFeel.h"
 
+#define INTERPOLATIONSIZE 16000
+
 //==============================================================================
 /**
 */
@@ -35,6 +37,9 @@ public:
 private:
     TherewillnotbebloodAudioProcessor& audioProcessor;
 
+    // texture image
+    juce::Image textureImage = juce::ImageCache::getFromMemory(BinaryData::rust_texture_png, BinaryData::rust_texture_pngSize);
+
     // Shadow and light
     juce::DropShadow shadow;
     juce::DropShadow light;
@@ -44,9 +49,7 @@ private:
     juce::Rectangle<int> imageRect;
 
     // Title
-    juce::Typeface::Ptr typeface = juce::Typeface::createSystemTypefaceFor(BinaryData::AdventPro_ExpandedExtraBold_ttf, BinaryData::AdventPro_ExpandedExtraBold_ttfSize);
-    juce::Rectangle<int> titleRect;
-    juce::ColourGradient titleGradient;
+    juce::Typeface::Ptr typeface = juce::Typeface::createSystemTypefaceFor(BinaryData::kraut____typefuck11_ttf, BinaryData::kraut____typefuck11_ttfSize);
 
     // Components
     LevelMeter levelMeter;
@@ -55,6 +58,11 @@ private:
     // FFT
     juce::dsp::FFT forwardFFT;
     juce::dsp::WindowingFunction<float> window;
+    juce::LagrangeInterpolator dryLagrangeInterpolator;
+    juce::LagrangeInterpolator wetLagrangeInterpolator;
+    float dryInterpolatedFftData[INTERPOLATIONSIZE];
+    float wetInterpolatedFftData[INTERPOLATIONSIZE];
+    float ratio = audioProcessor.fftSize / (float)INTERPOLATIONSIZE;
 
     // Sliders and buttons
     juce::Slider thresholdSlider;
@@ -66,10 +74,6 @@ private:
 
     // LookAndFeel
     LookAndFeel lookAndFeel;
-
-    // Variables
-    int frequency = 30;
-    float phase = 0.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TherewillnotbebloodAudioProcessorEditor)
 };

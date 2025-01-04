@@ -102,10 +102,10 @@ void TherewillnotbebloodAudioProcessor::prepareToPlay (double sampleRate, int sa
     compressor.setAttack(20.0f);
     compressor.setRelease(20.0f);
 
-    for (int filter = 0; filter < 2; ++filter) {
-		for (int channel = 0; channel < 2; ++channel) {
-			iirFilter[filter][channel].setCoefficients(juce::IIRCoefficients::makeHighPass(getSampleRate(), *apvts.getRawParameterValue("cutoff")));
-		}
+    for (int i = 0; i < 4; ++i) {
+        filter[i].prepare(spec);
+        filter[i].setType(juce::dsp::StateVariableTPTFilterType::highpass);
+        filter[i].setCutoffFrequency(*apvts.getRawParameterValue("cutoff"));
 	}
 }
 
@@ -157,9 +157,9 @@ void TherewillnotbebloodAudioProcessor::processBlock (juce::AudioBuffer<float>& 
     wetSignalBuffer.makeCopyOf(buffer);
 
     // Apply compression
-    juce::dsp::AudioBlock<float> block(wetSignalBuffer);
-    juce::dsp::ProcessContextReplacing<float> context(block);
-    compressor.process(context);
+    juce::dsp::AudioBlock<float> compressorBlock(wetSignalBuffer);
+    juce::dsp::ProcessContextReplacing<float> compressorContext(compressorBlock);
+    compressor.process(compressorContext);
 
     // Get rms values
     dryRmsValue = juce::Decibels::gainToDecibels((buffer.getRMSLevel(0, 0, drySignalBuffer.getNumSamples()) + drySignalBuffer.getRMSLevel(1, 0, drySignalBuffer.getNumSamples())) / 2.0f);
@@ -171,12 +171,11 @@ void TherewillnotbebloodAudioProcessor::processBlock (juce::AudioBuffer<float>& 
         pushNextDrySampleIntoFifo(wetSample);
     }
 
-    // Apply high pass filter
-    for (int filter = 0; filter < 2; ++filter) {
-        for (int channel = 0; channel < 2; ++channel) {
-            iirFilter[filter][channel].processSamples(wetSignalBuffer.getWritePointer(channel), wetSignalBuffer.getNumSamples());
-        }
-    }
+    for (int i = 0; i < NUMFILTERS; ++i) {
+		juce::dsp::AudioBlock<float> filterBlock(wetSignalBuffer);
+		juce::dsp::ProcessContextReplacing<float> filterContext(filterBlock);
+		filter[i].process(filterContext);
+	}
 
     // Push samples into wet fifo
     for (int sampleIndex = 0; sampleIndex < buffer.getNumSamples(); ++sampleIndex) {
@@ -184,7 +183,7 @@ void TherewillnotbebloodAudioProcessor::processBlock (juce::AudioBuffer<float>& 
 		pushNextWetSampleIntoFifo(wetSample);
 	}
 
-    
+    // Mix dry signal with phase inverted wet signal
     wetSignalBuffer.applyGain(-1.0f);
     wetSignalBuffer.addFrom(0, 0, drySignalBuffer, 0, 0, buffer.getNumSamples());
     wetSignalBuffer.addFrom(1, 0, drySignalBuffer, 1, 0, buffer.getNumSamples());
@@ -255,7 +254,6 @@ void TherewillnotbebloodAudioProcessor::pushNextDrySampleIntoFifo(float sample)
         if (!nextDryFFTBlockReady) {
             juce::zeromem(dryFftData, sizeof(dryFftData));
             memcpy(dryFftData, dryFifo, sizeof(dryFifo));
-
             nextDryFFTBlockReady = true;
         }
 
@@ -271,7 +269,6 @@ void TherewillnotbebloodAudioProcessor::pushNextWetSampleIntoFifo(float sample)
         if (!nextWetFFTBlockReady) {
             juce::zeromem(wetFftData, sizeof(wetFftData));
             memcpy(wetFftData, wetFifo, sizeof(wetFifo));
-
             nextWetFFTBlockReady = true;
         }
 
@@ -288,11 +285,9 @@ void TherewillnotbebloodAudioProcessor::setThreshold(float threshold)
 
 void TherewillnotbebloodAudioProcessor::setCutoff(float cutoff)
 {
-    for (int filter = 0; filter < 2; ++filter) {
-		for (int channel = 0; channel < 2; ++channel) {
-			iirFilter[filter][channel].setCoefficients(juce::IIRCoefficients::makeHighPass(getSampleRate(), cutoff));
-		}
-	}
+    for (int i = 0; i < NUMFILTERS; ++i) {
+        filter[i].setCutoffFrequency(cutoff);
+    }
 }
 
 //==============================================================================

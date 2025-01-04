@@ -11,10 +11,10 @@
 
 //==============================================================================
 TherewillnotbebloodAudioProcessorEditor::TherewillnotbebloodAudioProcessorEditor (TherewillnotbebloodAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), forwardFFT(10), window(1 << 10, juce::dsp::WindowingFunction<float>::hann)
+    : AudioProcessorEditor (&p), audioProcessor (p), forwardFFT(audioProcessor.fftOrder), window(1 << audioProcessor.fftOrder, juce::dsp::WindowingFunction<float>::hann)
 {
     setSize (600, 450);
-    startTimerHz(frequency);
+    startTimerHz(30);
 
     addAndMakeVisible(levelMeter);
     addAndMakeVisible(spectrumAnalyzer);
@@ -57,7 +57,7 @@ TherewillnotbebloodAudioProcessorEditor::TherewillnotbebloodAudioProcessorEditor
 
     // Shadow and light
     shadow = juce::DropShadow(juce::Colour::fromRGBA(0x00, 0x00, 0x00, 0x66), 15, juce::Point<int>(5, 5));
-    light = juce::DropShadow(juce::Colour::fromRGBA(0x40, 0x60, 0x80, 0x20), 15, juce::Point<int>(-5, -5));
+    light = juce::DropShadow(juce::Colour::fromRGBA(0x48, 0x47, 0x4D, 0x20), 15, juce::Point<int>(-5, -5));
 }
 
 TherewillnotbebloodAudioProcessorEditor::~TherewillnotbebloodAudioProcessorEditor()
@@ -68,21 +68,22 @@ TherewillnotbebloodAudioProcessorEditor::~TherewillnotbebloodAudioProcessorEdito
 //==============================================================================
 void TherewillnotbebloodAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.setColour(juce::Colour::fromRGB(0x18, 0x20, 0x2A));
+    g.setColour(juce::Colour::fromRGB(0x18, 0x17, 0x1D));
     g.fillAll();
 
+    // Draw title
+    g.setColour(juce::Colour::fromRGB(0xF6, 0xEF, 0xDE));
+    g.setFont(typeface);
+    g.setFont(42.0f);
+    g.drawText("There will not be blood", getLocalBounds().getCentreX() - 150, 10, 300, 50, juce::Justification::centred);
+
+    // fill texture
+    g.setOpacity(0.05f);
+    g.drawImageWithin(textureImage, 0, 0, getWidth(), getHeight(), juce::RectanglePlacement::stretchToFit);
+
+    g.setOpacity(1.0f);
     // Draw coconut plugins image
     g.drawImage(coconutPluginsImage, imageRect.toFloat());
-
-    // Draw title
-    shadow.drawForRectangle(g, titleRect);
-    light.drawForRectangle(g, titleRect);
-    g.setColour(juce::Colour::fromRGB(0x18, 0x20, 0x2A));
-    g.fillRoundedRectangle(titleRect.toFloat(), 10);
-    g.setColour(juce::Colours::white);
-    g.setGradientFill(titleGradient);
-    g.setFont(16.0f);
-    g.drawText("There will not be blood", getLocalBounds().getCentreX() - 100, 25, 200, 20, juce::Justification::centred);
 
     // Draw shadow and light for the components
     shadow.drawForRectangle(g, levelMeter.getBounds());
@@ -97,15 +98,9 @@ void TherewillnotbebloodAudioProcessorEditor::resized()
 {
     // Logo
     imageRect.setX(getWidth() - 70);
-    imageRect.setY(10);
-    imageRect.setWidth(50);
-    imageRect.setHeight(50);
-
-    // Title
-    titleRect.setBounds(getLocalBounds().getCentreX() - 110, 20, 220, 30);
-    float x = (titleRect.getWidth() - titleRect.getCentreX()) * cosf(phase);
-    float y = (titleRect.getHeight() - titleRect.getCentreY()) * sinf(phase);
-    titleGradient = juce::ColourGradient(juce::Colour::fromRGB(0x0D, 0x92, 0xF4), titleRect.getCentreX() + x, titleRect.getCentreY() + y, juce::Colour::fromRGB(0xC3, 0x0E, 0x59), titleRect.getCentreX() - x, titleRect.getCentreY() - y, false);
+    imageRect.setY(15);
+    imageRect.setWidth(40);
+    imageRect.setHeight(40);
 
     // Level meter
     juce::Rectangle<int> levelMeterBounds(getLocalBounds());
@@ -141,20 +136,15 @@ void TherewillnotbebloodAudioProcessorEditor::timerCallback()
     forwardFFT.performFrequencyOnlyForwardTransform(audioProcessor.dryFftData);
     window.multiplyWithWindowingTable(audioProcessor.wetFftData, audioProcessor.fftSize);
     forwardFFT.performFrequencyOnlyForwardTransform(audioProcessor.wetFftData);
+
+    // interpolate fft data
+    dryLagrangeInterpolator.process(ratio, audioProcessor.dryFftData, dryInterpolatedFftData, INTERPOLATIONSIZE);
+    wetLagrangeInterpolator.process(ratio, audioProcessor.wetFftData, wetInterpolatedFftData, INTERPOLATIONSIZE);
     
     // Update the spectrum analyzer
-    spectrumAnalyzer.updateSpectra(audioProcessor.dryFftData, audioProcessor.wetFftData, audioProcessor.fftSize);
+    spectrumAnalyzer.updateSpectra(dryInterpolatedFftData, wetInterpolatedFftData, INTERPOLATIONSIZE);
     audioProcessor.nextDryFFTBlockReady = false;
     audioProcessor.nextWetFFTBlockReady = false;
-
-    // Gradient animation
-    float x = (titleRect.getWidth() - titleRect.getCentreX()) * cosf(phase);
-    float y = -(titleRect.getWidth() - titleRect.getCentreX()) * sinf(phase);
-    titleGradient = juce::ColourGradient(juce::Colour::fromRGB(0x0D, 0x92, 0xF4), titleRect.getCentreX() + x, titleRect.getCentreY() + y, juce::Colour::fromRGB(0xC3, 0x0E, 0x59), titleRect.getCentreX() - x, titleRect.getCentreY() - y, false);
-    
-    phase += 2.0f * juce::float_Pi / (10.0f * frequency);
-    phase = fmodf(phase, 2.0f * juce::float_Pi);
-    lookAndFeel.phase = phase;
 
     repaint();
 }
