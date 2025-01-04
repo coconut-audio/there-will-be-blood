@@ -25,7 +25,7 @@ SpectrumAnalyzer::~SpectrumAnalyzer()
 void SpectrumAnalyzer::paint (juce::Graphics& g)
 {
     // Fill the background
-    g.setColour(juce::Colour::fromRGB(0x18, 0x20, 0x2A));
+    g.setColour(juce::Colour::fromRGB(0x18, 0x17, 0x1D));
     g.fillRoundedRectangle(backgroundRect, cornerSize);
 
     // Draw grid lines for dB
@@ -60,8 +60,8 @@ void SpectrumAnalyzer::paint (juce::Graphics& g)
     // Get dry spectrum path
     juce::Path drySpectrumPath;
 
-    for (int i = 0; i < scopeSize - 1; i++) {
-        float x = juce::jmap<float>(i, 0, scopeSize - 1, backgroundRect.getX(), backgroundRect.getRight());
+    for (int i = 0; i < SCOPESIZE - 1; i++) {
+        float x = juce::jmap<float>(i, 0, SCOPESIZE - 1, backgroundRect.getX(), backgroundRect.getRight());
         float y = juce::jmap<float>(dryScopeData[i], mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
 
         if (i == 0) {
@@ -71,9 +71,6 @@ void SpectrumAnalyzer::paint (juce::Graphics& g)
             drySpectrumPath.lineTo(x, y);
         }
     }
-
-    // Smoothen dry spectrum path
-    drySpectrumPath = drySpectrumPath.createPathWithRoundedCorners(cornerSize);
 
     // Draw dry spectrum outline
     g.setColour(juce::Colour::fromRGB(0xFF, 0xFF, 0xFF));
@@ -92,8 +89,8 @@ void SpectrumAnalyzer::paint (juce::Graphics& g)
         // Get wet spectrum path
         juce::Path wetSpectrumPath;
 
-        for (int i = 0; i < scopeSize - 1; i++) {
-            float x = juce::jmap<float>(i, 0, scopeSize - 1, backgroundRect.getX(), backgroundRect.getRight());
+        for (int i = 0; i < SCOPESIZE - 1; i++) {
+            float x = juce::jmap<float>(i, 0, SCOPESIZE - 1, backgroundRect.getX(), backgroundRect.getRight());
             float y = juce::jmap<float>(wetScopeData[i], mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
 
             if (i == 0) {
@@ -103,9 +100,6 @@ void SpectrumAnalyzer::paint (juce::Graphics& g)
                 wetSpectrumPath.lineTo(x, y);
             }
         }
-
-        // Smoothen wet spectrum path
-        wetSpectrumPath = wetSpectrumPath.createPathWithRoundedCorners(cornerSize);
 
         // Draw wet spectrum outline
         g.setColour(juce::Colour::fromRGB(0xFF, 0xFF, 0xFF));
@@ -119,16 +113,6 @@ void SpectrumAnalyzer::paint (juce::Graphics& g)
         // Fill wet spectrum path with gradient
         g.setGradientFill(spectrumGradient);
         g.fillPath(wetSpectrumPath);
-    }
-
-    // Draw dB labels
-    for (int i = mindB + 24; i < maxdB; i += 24) {
-        float y = juce::jmap<float>(i, mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
-
-        juce::String text = juce::String(i) + " dB";
-        g.setColour(juce::Colour::fromRGB(0xFF, 0xFF, 0xFF));
-        g.setFont(10.0f);
-        g.drawFittedText(text, juce::Rectangle<int>(backgroundRect.getX(), y - 10, 50, 20), juce::Justification::right, 1);
     }
 
     // Draw Hz labels
@@ -176,7 +160,7 @@ void SpectrumAnalyzer::paint (juce::Graphics& g)
     g.strokePath(cutoffPath, juce::PathStrokeType(strokeThickness));
 
     // Draw frame
-    g.setColour(juce::Colour::fromRGB(0x18, 0x20, 0x2A));
+    g.setColour(juce::Colour::fromRGB(0x18, 0x17, 0x1D));
     g.fillPath(frame);
 
     g.restoreState();
@@ -186,21 +170,22 @@ void SpectrumAnalyzer::resized()
 {
     backgroundRect = getLocalBounds().toFloat();
 
-    spectrumGradient = juce::ColourGradient(juce::Colour::fromRGBA(0x0D, 0x92, 0xF4, 0xAA), backgroundRect.getX(), backgroundRect.getBottom(), juce::Colour::fromRGBA(0xC3, 0x0E, 0x59, 0xAA), backgroundRect.getX(), backgroundRect.getY(), false);
+    float y = juce::jmap<float>(0.0f, mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
+    spectrumGradient = juce::ColourGradient(juce::Colour::fromRGBA(0xFF, 0xF0, 0x44, 0xAA), backgroundRect.getX(), backgroundRect.getBottom(), juce::Colour::fromRGBA(0xE4, 0x67, 0x2F, 0xAA), backgroundRect.getX(), y, false);
     
     shadow = juce::DropShadow(juce::Colour::fromRGBA(0x00, 0x00, 0x00, 0x44), 5, juce::Point<int>(5, 5));
-    light = juce::DropShadow(juce::Colour::fromRGBA(0x40, 0x60, 0x80, 0x20), 5, juce::Point<int>(-5, -5));
+    light = juce::DropShadow(juce::Colour::fromRGBA(0x48, 0x47, 0x4D, 0x20), 5, juce::Point<int>(-5, -5));
 }
 
 void SpectrumAnalyzer::updateSpectra(float* dryFftData, float* wetFftData, float fftSize) {
-    for (int i = 0; i < scopeSize; i++) {
+    for (int i = 0; i < SCOPESIZE; i++) {
         // Skew the spectrum
-        float ratio = i / (fftSize / 2.0f);
+        float ratio = i / (float)SCOPESIZE;
         float skewedProportion = (std::exp(ratio / 0.164f) - 1.0f) / 443.158f;
-        int fftDataIndex = juce::jlimit<int>(0, scopeSize - 1, (skewedProportion * scopeSize));
+        int fftDataIndex = juce::jlimit<int>(0, juce::roundFloatToInt(fftSize / 2.0f - 1.0f), (skewedProportion * fftSize / 2.0f));
 
-        float dryLevel = juce::Decibels::gainToDecibels(dryFftData[fftDataIndex]) - juce::Decibels::gainToDecibels(fftSize);
-        float wetLevel = juce::Decibels::gainToDecibels(wetFftData[fftDataIndex]) - juce::Decibels::gainToDecibels(fftSize);
+        float dryLevel = juce::Decibels::gainToDecibels(dryFftData[fftDataIndex]) - juce::Decibels::gainToDecibels(fftSize) + juce::Decibels::gainToDecibels(512.0f) + i * 0.05f;
+        float wetLevel = juce::Decibels::gainToDecibels(wetFftData[fftDataIndex]) - juce::Decibels::gainToDecibels(fftSize) + juce::Decibels::gainToDecibels(512.0f) + i * 0.05f;
 
         dryScopeData[i] = 0.5f * juce::jlimit(mindB, maxdB, dryLevel) + 0.5f * dryScopeData[i];
         wetScopeData[i] = 0.5f * juce::jlimit(mindB, maxdB, wetLevel) + 0.5f * wetScopeData[i];

@@ -14,6 +14,8 @@
 #include "SpectrumAnalyzer.h"
 #include "LookAndFeel.h"
 
+#define INTERPOLATIONSIZE 16000
+
 //==============================================================================
 /**
 */
@@ -35,6 +37,9 @@ public:
 private:
     TherewillnotbebloodAudioProcessor& audioProcessor;
 
+    // texture image
+    juce::Image textureImage = juce::ImageCache::getFromMemory(BinaryData::rust_texture_png, BinaryData::rust_texture_pngSize);
+
     // Shadow and light
     juce::DropShadow shadow;
     juce::DropShadow light;
@@ -53,6 +58,11 @@ private:
     // FFT
     juce::dsp::FFT forwardFFT;
     juce::dsp::WindowingFunction<float> window;
+    juce::LagrangeInterpolator dryLagrangeInterpolator;
+    juce::LagrangeInterpolator wetLagrangeInterpolator;
+    float dryInterpolatedFftData[INTERPOLATIONSIZE];
+    float wetInterpolatedFftData[INTERPOLATIONSIZE];
+    float ratio = audioProcessor.fftSize / (float)INTERPOLATIONSIZE;
 
     // Sliders and buttons
     juce::Slider thresholdSlider;
@@ -64,9 +74,6 @@ private:
 
     // LookAndFeel
     LookAndFeel lookAndFeel;
-
-    // Variables
-    int frequency = 30;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TherewillnotbebloodAudioProcessorEditor)
 };
