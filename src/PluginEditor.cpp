@@ -67,11 +67,7 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour(juce::Colour::fromRGB(0xF6, 0xEF, 0xDE));
     g.setFont(typeface);
     g.setFont(42.0f);
-    g.drawText("There will not be blood", getLocalBounds().getCentreX() - 150, 10, 300, 50, juce::Justification::centred);
-
-    // fill texture
-    g.setOpacity(0.05f);
-    g.drawImageWithin(textureImage, 0, 0, getWidth(), getHeight(), juce::RectanglePlacement::stretchToFit);
+    g.drawText("There will be blood", getLocalBounds().getCentreX() - 150, 10, 300, 50, juce::Justification::centred);
 
     g.setOpacity(1.0f);
     // Draw coconut plugins image
@@ -91,8 +87,8 @@ void AudioPluginAudioProcessorEditor::resized()
     // Logo
     imageRect.setX(getWidth() - 70);
     imageRect.setY(15);
-    imageRect.setWidth(40);
-    imageRect.setHeight(40);
+    imageRect.setWidth(44);
+    imageRect.setHeight(27);
 
     // Level meter
     juce::Rectangle<int> levelMeterBounds(getLocalBounds());
@@ -132,7 +128,7 @@ void AudioPluginAudioProcessorEditor::timerCallback()
     // interpolate fft data
     dryLagrangeInterpolator.process(ratio, processorRef.dryFftData, dryInterpolatedFftData, INTERPOLATIONSIZE);
     wetLagrangeInterpolator.process(ratio, processorRef.wetFftData, wetInterpolatedFftData, INTERPOLATIONSIZE);
-    
+
     // Update the spectrum analyzer
     spectrumAnalyzer.updateSpectra(dryInterpolatedFftData, wetInterpolatedFftData, INTERPOLATIONSIZE);
     processorRef.nextDryFFTBlockReady = false;

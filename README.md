@@ -1,7 +1,5 @@
 <h1>There will not be blood</h2>
 
-<p align="center"><img src="Screenshot.png" width="600"></p>
-
 ### Build from Source
 1. **Clone the Repository:**
    ```bash

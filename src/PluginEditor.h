@@ -26,9 +26,6 @@ public:
 private:
     AudioPluginAudioProcessor& processorRef;
 
-    // texture image
-    juce::Image textureImage = juce::ImageCache::getFromMemory(BinaryData::rust_texture_png, BinaryData::rust_texture_pngSize);
-
     // Shadow and light
     juce::DropShadow shadow;
     juce::DropShadow light;
