@@ -30,10 +30,6 @@ private:
     juce::DropShadow shadow;
     juce::DropShadow light;
 
-    // Logo
-    juce::Image coconutPluginsImage = juce::ImageCache::getFromMemory(BinaryData::coconut_audio_png, BinaryData::coconut_audio_pngSize);
-    juce::Rectangle<int> imageRect;
-
     // Title
     juce::Typeface::Ptr typeface = juce::Typeface::createSystemTypefaceFor(BinaryData::kraut____typefuck11_ttf, BinaryData::kraut____typefuck11_ttfSize);
 

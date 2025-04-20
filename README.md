@@ -1,6 +1,8 @@
-<h1>There will be blood</h2>
+# There will be blood
 
-### Build from Source
+![There will be blood](Screenshot.png)
+
+## Build from Source
 1. **Clone the Repository:**
    ```bash
    git clone https://github.com/Coconut-audio/there-will-be-blood.git
@@ -8,6 +10,7 @@
    ```
 3. **Build the Plugin:**
    ```bash
+   git clone https://github.com/juce-framework/JUCE
    cmake -B Builds -DCMAKE_BUILD_TYPE=Release
    cmake --build Builds --config Release
    ```
@@ -17,8 +20,6 @@ Contributions are welcome! If you'd like to contribute, follow these steps:
 1. **Fork the Repository:** Start by forking the [There will be blood](https://github.com/Coconut-audio/there-will-be-blood).
 2. **Make Changes:** Create a new branch, make your changes, and commit them to your branch.
 3. **Create a Pull Request:** Push your changes to your fork and submit a pull request.
-
-<a href="https://www.buymeacoffee.com/vivekvijayan12" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ## License
 This project is licensed under the GNU General Public License. See the [LICENSE](https://github.com/Coconut-audio/there-will-be-blood/blob/main/LICENSE) for details.

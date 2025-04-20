@@ -62,7 +62,6 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 # add binary data
 juce_add_binary_data(AudioPluginData
     SOURCES
-        "res/coconut_audio.png"
         "res/kraut____typefuck11.ttf")
 
 # link libraries

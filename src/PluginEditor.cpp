@@ -68,10 +68,7 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
     g.setFont(typeface);
     g.setFont(42.0f);
     g.drawText("There will be blood", getLocalBounds().getCentreX() - 150, 10, 300, 50, juce::Justification::centred);
-
     g.setOpacity(1.0f);
-    // Draw coconut plugins image
-    g.drawImage(coconutPluginsImage, imageRect.toFloat());
 
     // Draw shadow and light for the components
     shadow.drawForRectangle(g, levelMeter.getBounds());
@@ -84,12 +81,6 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 
 void AudioPluginAudioProcessorEditor::resized()
 {
-    // Logo
-    imageRect.setX(getWidth() - 70);
-    imageRect.setY(15);
-    imageRect.setWidth(44);
-    imageRect.setHeight(27);
-
     // Level meter
     juce::Rectangle<int> levelMeterBounds(getLocalBounds());
     levelMeterBounds.setY(60);
