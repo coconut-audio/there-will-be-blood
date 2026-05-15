@@ -10,7 +10,7 @@
    ```
 3. **Build the Plugin:**
    ```bash
-   git submodule add https://github.com/juce-framework/JUCE modules/JUCE
+   git submodule update --init --recursive
    cmake -B Builds -DCMAKE_BUILD_TYPE=Release
    cmake --build Builds --config Release
    ```
