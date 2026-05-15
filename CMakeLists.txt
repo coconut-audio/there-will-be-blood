@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(AUDIO_PLUGIN_EXAMPLE VERSION 0.0.1)
+project(THERE_WILL_BE_BLOOD VERSION 0.0.1)
 
 # read plugin.cfg
 file(READ "plugin.cfg" CONFIG_CONTENT)
@@ -19,10 +19,10 @@ message(STATUS "Version: ${CURRENT_VERSION}")
 message(STATUS "Plugin Code: ${CURRENT_PLUGIN_CODE}")
 
 # set JUCE path
-add_subdirectory(JUCE)
+add_subdirectory(modules/JUCE)
 
 # set plugin formats
-set(FORMATS VST3 AU)
+set(FORMATS VST3)
 
 # JUCE specific settings
 juce_add_plugin(${PROJECT_NAME}
@@ -48,10 +48,10 @@ endif()
 # add source files
 target_sources(${PROJECT_NAME}
     PRIVATE
-        "src/PluginEditor.cpp"
-        "src/PluginProcessor.cpp"
-        "src/LevelMeter.cpp"
-        "src/SpectrumAnalyzer.cpp")
+        "source/PluginEditor.cpp"
+        "source/PluginProcessor.cpp"
+        "source/LevelMeter.cpp"
+        "source/SpectrumAnalyzer.cpp")
 
 # generate JUCE header
 juce_generate_juce_header(${PROJECT_NAME})
@@ -60,14 +60,14 @@ juce_generate_juce_header(${PROJECT_NAME})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
 # add binary data
-juce_add_binary_data(AudioPluginData
+juce_add_binary_data(Data
     SOURCES
-        "res/kraut____typefuck11.ttf")
+        "resources/kraut____typefuck11.ttf")
 
 # link libraries
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
-        AudioPluginData
+        Data
         juce::juce_audio_utils
         juce::juce_dsp
     PUBLIC
@@ -80,10 +80,21 @@ if(MSVC)
     target_compile_definitions(${PROJECT_NAME}
         PRIVATE
         JUCE_VST3_CAN_REPLACE_VST2=0
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_compile_definitions(${PROJECT_NAME}
         PRIVATE
         JUCE_VST3_CAN_REPLACE_VST2=0
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+    )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_compile_definitions(${PROJECT_NAME}
+        PRIVATE
+        JUCE_VST3_CAN_REPLACE_VST2=0
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
     )
 endif()
