@@ -1,6 +1,6 @@
 # There will be blood
 
-![There will be blood](Screenshot.png)
+![There will be blood](.github/Screenshot.png)
 
 ## Build from Source
 1. **Clone the Repository:**
@@ -10,7 +10,7 @@
    ```
 3. **Build the Plugin:**
    ```bash
-   git clone https://github.com/juce-framework/JUCE
+   git submodule add https://github.com/juce-framework/JUCE modules/JUCE
    cmake -B Builds -DCMAKE_BUILD_TYPE=Release
    cmake --build Builds --config Release
    ```
