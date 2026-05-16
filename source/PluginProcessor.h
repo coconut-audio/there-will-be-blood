@@ -3,8 +3,6 @@
 #include <JuceHeader.h>
 #include <juce_audio_processors/juce_audio_processors.h>
 
-#define NUMFILTERS 4
-
 class Processor final : public AudioProcessor
 {
 public:
@@ -42,8 +40,8 @@ public:
     void pushNextDrySampleIntoFifo(float);
     void pushNextWetSampleIntoFifo(float);
 
-    void setThreshold(float);
-    void setCutoff(float);
+    void setCompressorThreshold(float);
+    void setFilterCutoff(float);
 
     AudioProcessorValueTreeState::ParameterLayout createParameters();
     AudioProcessorValueTreeState apvts;
@@ -71,7 +69,8 @@ private:
 
     dsp::Compressor<float> compressor;
 
-    dsp::StateVariableTPTFilter<float> filter[NUMFILTERS];
+    const static int numFilters = 4;
+    dsp::StateVariableTPTFilter<float> filter[numFilters];
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Processor)
 };

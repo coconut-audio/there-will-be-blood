@@ -90,15 +90,15 @@ void Processor::prepareToPlay (double sampleRate, int samplesPerBlock)
     spec.numChannels = uint32(getTotalNumOutputChannels());
 
     compressor.prepare(spec);
-    compressor.setThreshold(*apvts.getRawParameterValue("threshold"));
+    compressor.setThreshold(apvts.getRawParameterValue("threshold")->load());
     compressor.setRatio(8.0f);
     compressor.setAttack(20.0f);
     compressor.setRelease(20.0f);
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < numFilters; ++i) {
         filter[i].prepare(spec);
         filter[i].setType(dsp::StateVariableTPTFilterType::highpass);
-        filter[i].setCutoffFrequency(*apvts.getRawParameterValue("cutoff"));
+        filter[i].setCutoffFrequency(apvts.getRawParameterValue("cutoff")->load());
 	}
 }
 
@@ -126,8 +126,7 @@ bool Processor::isBusesLayoutSupported (const BusesLayout& layouts) const
   #endif
 }
 
-void Processor::processBlock (AudioBuffer<float>& buffer,
-                                              MidiBuffer& /*midiMessages*/)
+void Processor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& /*midiMessages*/)
 {
     ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -157,7 +156,7 @@ void Processor::processBlock (AudioBuffer<float>& buffer,
         pushNextDrySampleIntoFifo(wetSample);
     }
 
-    for (int i = 0; i < NUMFILTERS; ++i) {
+    for (int i = 0; i < numFilters; ++i) {
         dsp::AudioBlock<float> filterBlock(wetSignalBuffer);
         dsp::ProcessContextReplacing<float> filterContext(filterBlock);
         filter[i].process(filterContext);
@@ -174,7 +173,9 @@ void Processor::processBlock (AudioBuffer<float>& buffer,
     wetSignalBuffer.addFrom(0, 0, drySignalBuffer, 0, 0, buffer.getNumSamples());
     wetSignalBuffer.addFrom(1, 0, drySignalBuffer, 1, 0, buffer.getNumSamples());
 
-    if (*apvts.getRawParameterValue("bypass")) {
+    bool bypass = apvts.getRawParameterValue("bypass")->load() > 0.5f;
+
+    if (bypass) {
         buffer.makeCopyOf(drySignalBuffer);
     }
     else {
@@ -261,14 +262,14 @@ void Processor::pushNextWetSampleIntoFifo(float sample)
     wetFifo[wetFifoIndex++] = sample;
 }
 
-void Processor::setThreshold(float threshold)
+void Processor::setCompressorThreshold(float threshold)
 {
 	compressor.setThreshold(threshold);
 }
 
-void Processor::setCutoff(float cutoff)
+void Processor::setFilterCutoff(float cutoff)
 {
-    for (int i = 0; i < NUMFILTERS; ++i) {
+    for (int i = 0; i < numFilters; ++i) {
         filter[i].setCutoffFrequency(cutoff);
     }
 }

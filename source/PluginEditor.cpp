@@ -42,7 +42,8 @@ Editor::Editor (Processor& p)
     bypassButtonAttachment = std::make_unique<AudioProcessorValueTreeState::ButtonAttachment>(processorRef.apvts, "bypass", bypassButton);
     bypassButton.setLookAndFeel(&lookAndFeel);
     addAndMakeVisible(&bypassButton);
-    bypassButton.setToggleState(processorRef.apvts.getRawParameterValue("bypass")->load(), NotificationType::dontSendNotification);
+    bool bypass = processorRef.apvts.getRawParameterValue("bypass")->load() > 0.5f;
+    bypassButton.setToggleState(bypass, NotificationType::dontSendNotification);
 }
 
 Editor::~Editor()
@@ -50,7 +51,6 @@ Editor::~Editor()
     stopTimer();
 }
 
-//==============================================================================
 void Editor::paint (Graphics& g)
 {
     g.setColour(Colour(0x18, 0x17, 0x1D));
@@ -58,8 +58,7 @@ void Editor::paint (Graphics& g)
 
     // Draw title
     g.setColour(Colour(0xF6, 0xEF, 0xDE));
-    g.setFont(typeface);
-    g.setFont(42.0f);
+    g.setFont(FontOptions(typeface).withHeight(42.0f));
     g.drawText("There will be blood", getLocalBounds().getCentreX() - 150, 10, 300, 50, juce::Justification::centred);
     g.setOpacity(1.0f);
 
@@ -110,11 +109,11 @@ void Editor::timerCallback()
     forwardFFT.performFrequencyOnlyForwardTransform(processorRef.wetFftData);
 
     // interpolate fft data
-    dryLagrangeInterpolator.process((float)processorRef.fftSize / (float)INTERPOLATIONSIZE, processorRef.dryFftData, dryInterpolatedFftData, INTERPOLATIONSIZE);
-    wetLagrangeInterpolator.process((float)processorRef.fftSize / (float)INTERPOLATIONSIZE, processorRef.wetFftData, wetInterpolatedFftData, INTERPOLATIONSIZE);
+    dryLagrangeInterpolator.process((float)processorRef.fftSize / (float)interpolatedSize, processorRef.dryFftData, dryInterpolatedFftData, interpolatedSize);
+    wetLagrangeInterpolator.process((float)processorRef.fftSize / (float)interpolatedSize, processorRef.wetFftData, wetInterpolatedFftData, interpolatedSize);
 
     // Update the spectrum analyzer
-    spectrumAnalyzer.updateSpectra(dryInterpolatedFftData, wetInterpolatedFftData, INTERPOLATIONSIZE);
+    spectrumAnalyzer.updateSpectra(dryInterpolatedFftData, wetInterpolatedFftData, (float)interpolatedSize);
     processorRef.nextDryFFTBlockReady = false;
     processorRef.nextWetFFTBlockReady = false;
 
@@ -124,8 +123,8 @@ void Editor::timerCallback()
 void Editor::sliderValueChanged(Slider* slider)
 {
     if (slider == &thresholdSlider) {
-        processorRef.setThreshold(processorRef.apvts.getRawParameterValue("threshold")->load());
+        processorRef.setCompressorThreshold(processorRef.apvts.getRawParameterValue("threshold")->load());
     } else if (slider == &cutoffSlider) {
-        processorRef.setCutoff(processorRef.apvts.getRawParameterValue("cutoff")->load());
+        processorRef.setFilterCutoff(processorRef.apvts.getRawParameterValue("cutoff")->load());
 	}
 }

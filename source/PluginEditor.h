@@ -6,8 +6,6 @@
 #include "SpectrumAnalyzer.h"
 #include "CustomLookAndFeel.h"
 
-#define INTERPOLATIONSIZE 16000
-
 class Editor final : public AudioProcessorEditor, public Timer, public Slider::Listener
 {
 public:
@@ -23,24 +21,25 @@ public:
 private:
     Processor& processorRef;
 
-    // Shadow and light
-    DropShadow shadow;
-    DropShadow light;
-
     // Title
     Typeface::Ptr typeface = Typeface::createSystemTypefaceFor(BinaryData::kraut____typefuck11_ttf, BinaryData::kraut____typefuck11_ttfSize);
+
+    // FFT
+    const static int interpolatedSize = 16000;
+    dsp::FFT forwardFFT;
+    dsp::WindowingFunction<float> window;
+    LagrangeInterpolator dryLagrangeInterpolator;
+    LagrangeInterpolator wetLagrangeInterpolator;
+    float dryInterpolatedFftData[interpolatedSize];
+    float wetInterpolatedFftData[interpolatedSize];
 
     // Components
     LevelMeter levelMeter;
     SpectrumAnalyzer spectrumAnalyzer;
 
-    // FFT
-    dsp::FFT forwardFFT;
-    dsp::WindowingFunction<float> window;
-    LagrangeInterpolator dryLagrangeInterpolator;
-    LagrangeInterpolator wetLagrangeInterpolator;
-    float dryInterpolatedFftData[INTERPOLATIONSIZE];
-    float wetInterpolatedFftData[INTERPOLATIONSIZE];
+    // Shadow and light
+    DropShadow shadow;
+    DropShadow light;
 
     // Sliders and buttons
     Slider thresholdSlider;

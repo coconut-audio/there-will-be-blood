@@ -74,7 +74,9 @@ void SpectrumAnalyzer::paint (Graphics& g)
     g.setColour(Colour::fromRGBA(0x55, 0x55, 0x55, 0x88));
     g.fillPath(drySpectrumPath);
 
-    if (!processorRef.apvts.getRawParameterValue("bypass")->load()) {
+    bool bypass = processorRef.apvts.getRawParameterValue("bypass")->load() > 0.5f;
+
+    if (!bypass) {
         // Get wet spectrum path
         Path wetSpectrumPath;
 
@@ -171,7 +173,7 @@ void SpectrumAnalyzer::updateSpectra(float* dryFftData, float* wetFftData, float
         // Skew the spectrum
         float ratio = i / (float)scopeSize;
         float skewedProportion = (std::exp(ratio / 0.164f) - 1.0f) / 443.158f;
-        int fftDataIndex = jlimit<int>(0, roundFloatToInt(fftSize / 2.0f - 1.0f), (skewedProportion * fftSize / 2.0f));
+        int fftDataIndex = jlimit<int>(0, roundToInt(fftSize / 2.0f - 1.0f), (skewedProportion * fftSize / 2.0f));
 
         float dryLevel = Decibels::gainToDecibels(dryFftData[fftDataIndex]) - Decibels::gainToDecibels(fftSize) + Decibels::gainToDecibels(512.0f) + i * 0.05f;
         float wetLevel = Decibels::gainToDecibels(wetFftData[fftDataIndex]) - Decibels::gainToDecibels(fftSize) + Decibels::gainToDecibels(512.0f) + i * 0.05f;
