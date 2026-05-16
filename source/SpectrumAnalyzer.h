@@ -19,7 +19,6 @@ public:
     constexpr static float minHz = 20.0f;
     constexpr static float maxHz = 20000.0f;
 
-
 private:
     Processor& processorRef;
 
@@ -29,13 +28,15 @@ private:
     DropShadow shadow;
     DropShadow light;
 
-    constexpr static int scopeSize = 512;
+    const static int scopeSize = 512;
     float dryScopeData[scopeSize];
     float wetScopeData[scopeSize];
 
     std::vector<int> frequencies = { 80, 250, 500, 1000, 2000, 4000, 10000 };
     constexpr static float cornerSize = 10.0f;
     constexpr static float strokeThickness = 2.0f;
+
+    int samplerate;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpectrumAnalyzer)
 };

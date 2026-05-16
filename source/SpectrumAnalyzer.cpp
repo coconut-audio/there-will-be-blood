@@ -3,6 +3,7 @@
 
 SpectrumAnalyzer::SpectrumAnalyzer(Processor& p)
     : processorRef(p)
+    , samplerate(processorRef.getSampleRate())
 {
 }
 
@@ -31,7 +32,7 @@ void SpectrumAnalyzer::paint (Graphics& g)
 
     // Draw grid lines for Hz
     for (int frequency : frequencies) {
-        float ratio = frequency / (processorRef.getSampleRate() / 2.0f);
+        float ratio = frequency / (samplerate / 2.0f);
         float skewedProportion = 0.164f * std::log(443.158f * ratio + 1.0f);
         float x = jmap<float>(skewedProportion, backgroundRect.getX(), backgroundRect.getRight());
 
@@ -73,7 +74,9 @@ void SpectrumAnalyzer::paint (Graphics& g)
     g.setColour(Colour::fromRGBA(0x55, 0x55, 0x55, 0x88));
     g.fillPath(drySpectrumPath);
 
-    if (!processorRef.apvts.getRawParameterValue("bypass")->load()) {
+    bool bypass = processorRef.apvts.getRawParameterValue("bypass")->load() > 0.5f;
+
+    if (!bypass) {
         // Get wet spectrum path
         Path wetSpectrumPath;
 
@@ -105,7 +108,7 @@ void SpectrumAnalyzer::paint (Graphics& g)
 
     // Draw Hz labels
     for (int frequency: frequencies) {
-        float ratio = frequency / (processorRef.getSampleRate() / 2.0f);
+        float ratio = frequency / (samplerate / 2.0f);
         float skewedProportion = 0.164f * std::log(443.158f * ratio + 1.0f);
         float x = jmap<float>(skewedProportion, backgroundRect.getX(), backgroundRect.getRight());
 
@@ -124,7 +127,7 @@ void SpectrumAnalyzer::paint (Graphics& g)
     light.drawForPath(g, frame);
 
     // draw highpass cutoff line at y = 0 dB and x = cutoff frequency,  make it curve at cutoff and go down
-    float ratio = processorRef.apvts.getRawParameterValue("cutoff")->load() / (processorRef.getSampleRate() / 2.0f);
+    float ratio = processorRef.apvts.getRawParameterValue("cutoff")->load() / (samplerate / 2.0f);
     float skewedProportion = 0.164f * std::log(443.158f * ratio + 1.0f);
     float x = jmap<float>(skewedProportion, backgroundRect.getX(), backgroundRect.getRight());
     float y = jmap<float>(0.0f, mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
@@ -170,7 +173,7 @@ void SpectrumAnalyzer::updateSpectra(float* dryFftData, float* wetFftData, float
         // Skew the spectrum
         float ratio = i / (float)scopeSize;
         float skewedProportion = (std::exp(ratio / 0.164f) - 1.0f) / 443.158f;
-        int fftDataIndex = jlimit<int>(0, roundFloatToInt(fftSize / 2.0f - 1.0f), (skewedProportion * fftSize / 2.0f));
+        int fftDataIndex = jlimit<int>(0, roundToInt(fftSize / 2.0f - 1.0f), (skewedProportion * fftSize / 2.0f));
 
         float dryLevel = Decibels::gainToDecibels(dryFftData[fftDataIndex]) - Decibels::gainToDecibels(fftSize) + Decibels::gainToDecibels(512.0f) + i * 0.05f;
         float wetLevel = Decibels::gainToDecibels(wetFftData[fftDataIndex]) - Decibels::gainToDecibels(fftSize) + Decibels::gainToDecibels(512.0f) + i * 0.05f;

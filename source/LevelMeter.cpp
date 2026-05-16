@@ -43,7 +43,7 @@ void LevelMeter::paint (Graphics& g)
     // Get dry rms path
     Path dryRmsPath;
 
-    for (int i = 0; i < dryRmsValues.size() - 1; i++) {
+    for (size_t i = 0; i < dryRmsValues.size() - 1; i++) {
         float x = jmap<float>(i, 0, dryRmsValues.size() - 1, backgroundRect.getX(), backgroundRect.getRight());
         float y = jmap<float>(dryRmsValues[i], mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
 
@@ -68,11 +68,13 @@ void LevelMeter::paint (Graphics& g)
     g.setColour(Colour::fromRGBA(0x55, 0x55, 0x55, 0x88));
     g.fillPath(dryRmsPath);
 
-    if (!processorRef.apvts.getRawParameterValue("bypass")->load()) {
+    bool bypass = processorRef.apvts.getRawParameterValue("bypass")->load() > 0.5f;
+
+    if (!bypass) {
         // Get wet rms path
         Path wetRmsPath;
 
-        for (int i = 0; i < wetRmsValues.size() - 1; i++) {
+        for (size_t i = 0; i < wetRmsValues.size() - 1; i++) {
             float x = jmap<float>(i, 0, wetRmsValues.size() - 1, backgroundRect.getX(), backgroundRect.getRight());
             float y = jmap<float>(wetRmsValues[i], mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
 

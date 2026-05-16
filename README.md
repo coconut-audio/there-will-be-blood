@@ -7,10 +7,10 @@
    ```bash
    git clone https://github.com/coconut-audio/there-will-be-blood.git
    cd there-will-be-blood
+   git submodule update --init --recursive
    ```
 3. **Build the Plugin:**
    ```bash
-   git submodule update --init --recursive
    cmake -B Builds -DCMAKE_BUILD_TYPE=Release
    cmake --build Builds --config Release
    ```
