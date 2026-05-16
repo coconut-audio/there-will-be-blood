@@ -3,6 +3,7 @@
 
 SpectrumAnalyzer::SpectrumAnalyzer(Processor& p)
     : processorRef(p)
+    , samplerate(processorRef.getSampleRate())
 {
 }
 
@@ -31,7 +32,7 @@ void SpectrumAnalyzer::paint (Graphics& g)
 
     // Draw grid lines for Hz
     for (int frequency : frequencies) {
-        float ratio = frequency / (processorRef.getSampleRate() / 2.0f);
+        float ratio = frequency / (samplerate / 2.0f);
         float skewedProportion = 0.164f * std::log(443.158f * ratio + 1.0f);
         float x = jmap<float>(skewedProportion, backgroundRect.getX(), backgroundRect.getRight());
 
@@ -105,7 +106,7 @@ void SpectrumAnalyzer::paint (Graphics& g)
 
     // Draw Hz labels
     for (int frequency: frequencies) {
-        float ratio = frequency / (processorRef.getSampleRate() / 2.0f);
+        float ratio = frequency / (samplerate / 2.0f);
         float skewedProportion = 0.164f * std::log(443.158f * ratio + 1.0f);
         float x = jmap<float>(skewedProportion, backgroundRect.getX(), backgroundRect.getRight());
 
@@ -124,7 +125,7 @@ void SpectrumAnalyzer::paint (Graphics& g)
     light.drawForPath(g, frame);
 
     // draw highpass cutoff line at y = 0 dB and x = cutoff frequency,  make it curve at cutoff and go down
-    float ratio = processorRef.apvts.getRawParameterValue("cutoff")->load() / (processorRef.getSampleRate() / 2.0f);
+    float ratio = processorRef.apvts.getRawParameterValue("cutoff")->load() / (samplerate / 2.0f);
     float skewedProportion = 0.164f * std::log(443.158f * ratio + 1.0f);
     float x = jmap<float>(skewedProportion, backgroundRect.getX(), backgroundRect.getRight());
     float y = jmap<float>(0.0f, mindB, maxdB, backgroundRect.getBottom(), backgroundRect.getY());
